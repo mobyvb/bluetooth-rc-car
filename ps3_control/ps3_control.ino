@@ -57,22 +57,42 @@ void loop() {
     }
     
     else {
-      Serial.print(F("\r\nPitch: "));               
-      Serial.print(PS3.getAngle(Pitch));                  
-      Serial.print(F("\tRoll: ")); 
-      Serial.print(PS3.getAngle(Roll));
+      int pitch = PS3.getAngle(Pitch);
+      if(pitch > 185) {
+        if(pitch > 225) pitch = 230;
+        motorSpeed = map(pitch, 185, 230, 0, 255);
+        forward = true;
+      }
+      else if(pitch < 175) {
+        if(pitch < 130) pitch = 130;
+        motorSpeed = map(pitch, 175, 130, 0, 255);
+        forward = false;
+      }
+      else {
+        motorSpeed = 0;
+      }
+      
+      int roll = PS3.getAngle(Roll);
+      if(roll < 125) roll = 125;
+      else if(roll > 225) roll = 225;
+      turnAngle = map(roll, 125, 225, leftBound, rightBound);
     }
     
     if(PS3.getButtonClick(PS)) {
-      Serial.print(F("\r\nPS"));
       PS3.disconnect();
     } 
     else {
-      if(PS3.getButtonClick(START)) {
-        Serial.print(F("\r\nStart"));              
+      if(PS3.getButtonClick(START)) {            
         defaultControls = !defaultControls;
       }                           
     }
   }
+  
+  Serial.print(F("\t\nForward: "));
+  Serial.print(forward);
+  Serial.print(F("\tMotor speed: "));
+  Serial.print(motorSpeed);
+  Serial.print(F("\tTurn angle: "));
+  Serial.print(turnAngle);
   delay(10);
 }
