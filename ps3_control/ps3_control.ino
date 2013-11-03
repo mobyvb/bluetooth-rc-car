@@ -96,7 +96,7 @@ void loop() {
       PS3.disconnect();
       digitalWrite(error, LOW);
       digitalWrite(success, LOW);
-      digitalWrite(waiting, LOW);
+      digitalWrite(waiting, HIGH);
     } 
     else {
       if(PS3.getButtonClick(START)) {            
@@ -104,6 +104,17 @@ void loop() {
       }                           
     }
   }
+  
+  if(forward) {
+    analogWrite(motorA, 0);
+    analogWrite(motorB, motorSpeed);
+  }
+  else {
+    analogWrite(motorA, motorSpeed);
+    analogWrite(motorB, 0);
+  }
+  
+  steering.write(turnAngle);
   
   Serial.print(F("\t\nForward: "));
   Serial.print(forward);
