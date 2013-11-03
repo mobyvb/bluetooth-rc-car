@@ -9,6 +9,10 @@ PS3BT PS3(&Btd,0x00,0x15,0x83,0x3D,0x0A,0x57); // This will also store the bluet
 
 boolean defaultControls = true;
 
+int success = 31;
+int waiting = 35;
+int error = 39;
+
 boolean forward = true;
 int motorA = 2;
 int motorB = 4;
@@ -26,15 +30,25 @@ void setup() {
   
   while (!Serial);
   if (Usb.Init() == -1) {
+    digitalWrite(error, HIGH);
+    digitalWrite(success, LOW);
+    digitalWrite(waiting, LOW);
     Serial.print(F("\r\nOSC did not start"));
     while(1); //halt
   }
+  digitalWrite(error, LOW);
+  digitalWrite(success, LOW);
+  digitalWrite(waiting, HIGH);
   Serial.print(F("\r\nPS3 Bluetooth Library Started"));
 }
 void loop() {
   Usb.Task();
   
   if(PS3.PS3Connected || PS3.PS3NavigationConnected) {
+    digitalWrite(error, LOW);
+    digitalWrite(success, HIGH);
+    digitalWrite(waiting, LOW);
+
     if(defaultControls) {
       if(PS3.getAnalogHat(LeftHatX) > 137 || PS3.getAnalogHat(LeftHatX) < 117 || PS3.getAnalogHat(LeftHatY) > 137 || PS3.getAnalogHat(LeftHatY) < 117) {
         turnAngle = map(PS3.getAnalogHat(LeftHatX), 0, 255, leftBound, rightBound);   
@@ -80,6 +94,9 @@ void loop() {
     
     if(PS3.getButtonClick(PS)) {
       PS3.disconnect();
+      digitalWrite(error, LOW);
+      digitalWrite(success, LOW);
+      digitalWrite(waiting, LOW);
     } 
     else {
       if(PS3.getButtonClick(START)) {            
