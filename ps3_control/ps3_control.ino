@@ -5,7 +5,7 @@
 USB Usb;
 USBHub Hub1(&Usb);
 BTD Btd(&Usb);
-PS3BT PS3(&Btd,0x00,0x15,0x83,0x3D,0x0A,0x57); // This will also store the bluetooth address - this can be obtained from the dongle when running the sketch
+PS3BT PS3(&Btd);
 
 boolean defaultControls = true;
 
@@ -16,6 +16,7 @@ int error = 39;
 boolean forward = true;
 int motorA = 2;
 int motorB = 4;
+int motorPWM = 6;
 int motorSpeed;
 
 Servo steering;
@@ -96,7 +97,7 @@ void loop() {
       PS3.disconnect();
       digitalWrite(error, LOW);
       digitalWrite(success, LOW);
-      digitalWrite(waiting, HIGH);
+      digitalWrite(waiting, LOW);
     } 
     else {
       if(PS3.getButtonClick(START)) {            
@@ -105,14 +106,17 @@ void loop() {
     }
   }
   
+  if(motorSpeed > 200) motorSpeed = 200;
+  
   if(forward) {
-    analogWrite(motorA, 0);
-    analogWrite(motorB, motorSpeed);
+    digitalWrite(motorA, LOW);
+    digitalWrite(motorB, HIGH);
   }
   else {
-    analogWrite(motorA, motorSpeed);
-    analogWrite(motorB, 0);
+    digitalWrite(motorA, HIGH);
+    digitalWrite(motorB, LOW);
   }
+  analogWrite(motorPWM, motorSpeed);
   
   steering.write(turnAngle);
   
