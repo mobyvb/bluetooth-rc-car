@@ -16,7 +16,7 @@ int error = 39;
 boolean forward = true;
 int motorA = 2;
 int motorB = 4;
-int motorPWM = 6;
+int motorPWM = 5;
 int motorSpeed;
 
 Servo steering;
@@ -106,7 +106,7 @@ void loop() {
     }
   }
   
-  if(motorSpeed > 200) motorSpeed = 200;
+  if(motorSpeed > 255) motorSpeed = 255;
   
   if(forward) {
     digitalWrite(motorA, LOW);
